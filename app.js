@@ -36,3 +36,60 @@ function fetchPeopleWithPromises(){
 }
 
 fetchPeopleWithPromises();
+
+
+//demo from class 10
+
+const superagent = require('superagent');
+
+let fetchPeopleWithPromises = () => {
+
+  return superagent.get('https://swapi.co/api/people')
+  .then(response => {
+    return response.body.results.map(person => {
+      return superagent.get(person.url);
+    });
+  })
+  .then(peoplePromises => {
+    return Promise.all(peoplePromises)
+    .then(people => {
+      let names = [];
+      for (let data of people){
+        names.push(data.body.name);
+      }
+      return names;
+    });
+  })
+  .catch(console.error);
+};
+
+
+  // with async
+  
+  let fetchPeopleWithAsync = async () => {
+    try {
+
+    let peopleSet = await superagent.get('https://swapi.co/api/people');
+    let people = (peopleSet.body && peopleSet.body.results) || [];
+    let peopleRequests = peoplep.map((person) => {
+      return superagent.get(person, url);
+    });
+    let swapiNames = await Promise.all(peopleRequests)
+      .then(people => {
+        let names = [];
+        for (let data of people){
+          names.push(data.body.name);
+        }
+        return names;
+      });
+      return swapiNames;
+    }
+    catch(error){console.error('messed up', error)}
+  }
+
+
+  fetchPeopleWithPromises()
+  .then(people => console.log(people));
+
+  fetchPeopleWithAsync()
+    .then(people => console.log.log('Promise', people));
