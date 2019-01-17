@@ -2,28 +2,27 @@
 
 const superagent = require('superagent');
 
-
-let fetchPeopleWithAsync = async () => {
+let fetchPeopleWithAsync = async () =>{
   try {
-
     let peopleSet = await superagent.get('https://swapi.co/api/people');
     let people = (peopleSet.body && peopleSet.body.results) || [];
-    let peopleRequests = people.map((person) => {
+    let peopleRequests = people.map((person) =>{
       return superagent.get(person.url);
     });
     let swapiNames = await Promise.all(peopleRequests)
-      .then(people => {
+      .then(people =>{
         let names = [];
-        for (let data of people){
+        for(let data of people){
           names.push(data.body.name);
         }
         return names;
       });
     return swapiNames;
   }
-  catch(error){console.error('messed up', error);}
+  catch(error){
+    console.error('messed up', error);
+  }
 };
-
 
 fetchPeopleWithAsync()
   .then(people => console.log('Promise', people));
